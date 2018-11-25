@@ -54,21 +54,26 @@ class Reflexia():
             #########################################################
             ###################### Reflexia View ####################
             #########################################################
-            game_frame = self.locate_on_board(game_frame, self.turns_dimensions, thickness=2)
-            game_frame = self.locate_on_board(game_frame, self.board_dimensions, thickness=2)
-            game_frame = self.locate_on_board(game_frame, self.health_dimensions, thickness=2)
+            game_frame = self.locate_on_screen(game_frame, self.turns_dimensions, thickness=2)
+            game_frame = self.locate_on_screen(game_frame, self.board_dimensions, thickness=2)
+            game_frame = self.locate_on_screen(game_frame, self.health_dimensions, thickness=2)
             #########################################################
             ################### Get items on board ##################
             #########################################################
-            potion_w, potion_h, potion_locations = self.detect_item(game_board_frame, 'potion')
-            sword_w, sword_h, sword_locations = self.detect_item(game_board_frame, 'sword')
-            star_w, star_h, star_locations = self.detect_item(game_board_frame, 'star')
-            orb_w, orb_h, orb_locations = self.detect_item(game_board_frame, 'orb')
+            
             x, y = self.board_dimensions['top_corner']
 
-            locations = potion_locations+sword_locations+star_locations+orb_locations
-            for point in zip(*locations[::-1]):
-                cv2.circle(game_frame, (point[0]+25+x, point[1]+25+y), 10, (0,0,255), 10)
+            potion_w, potion_h, potion_locations = self.detect_item(game_board_frame, 'potion')
+            game_frame = self.locate_on_board(game_frame, potion_locations, (0,255,0), 15)
+
+            sword_w, sword_h, sword_locations = self.detect_item(game_board_frame, 'sword')
+            game_frame = self.locate_on_board(game_frame, sword_locations, (255,255,0), 15)
+            
+            star_w, star_h, star_locations = self.detect_item(game_board_frame, 'star')
+            game_frame = self.locate_on_board(game_frame, star_locations, (0,255,255), 15)
+
+            orb_w, orb_h, orb_locations = self.detect_item(game_board_frame, 'orb')            
+            game_frame = self.locate_on_board(game_frame, orb_locations, (255,0,255), 15)
             #########################################################
             ################### Show window Frames ##################
             #########################################################
@@ -78,14 +83,23 @@ class Reflexia():
                 cv2.destroyAllWindows()
                 break
 
-    def locate_on_board(self, game_board_frame, dimensions, color=(0,255,0), thickness=1):
+    def locate_on_screen(self, game_board_frame, dimensions, color=(0,255,0), thickness=1):
         """
-        Draw a rectangle with the given dimensions  color & thickness over the given frame
+        Draw a rectangle with the given dimensions, color & thickness over the given frame
         """
         top_corner    = dimensions['top_corner']
         bottom_corner = dimensions['bottom_corner']
         cv2.rectangle(game_board_frame, top_corner, bottom_corner, color, thickness)
         return game_board_frame
+
+    def locate_on_board(self, game_frame, locations, color=(0,255,0), thickness=10):
+        """
+        Draw a circle with the given dimensions, color & thickness over the given frame
+        """
+        x, y = self.board_dimensions['top_corner']
+        for point in zip(*locations[::-1]):
+            cv2.circle(game_frame, (point[0]+25+x, point[1]+25+y), 10, color, thickness)
+        return game_frame
 
     def detect_item(self, game_frame, item_name, threshold=0.8):
         """
