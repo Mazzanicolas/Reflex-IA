@@ -12,6 +12,7 @@ class Reflexia():
         +
         """ 
         self.window_position = win32gui.FindWindow(None, window_name)
+        self.symbols = [0,1,2,3,4,5,6,7,8,9,'/']
         self.items_on_board = {
                                1: (1, 'STR','./items/star.png'),   # ID: 1
                                2: (2, 'ORB','./items/orb.png'),    # ID: 2
@@ -77,6 +78,8 @@ class Reflexia():
             ################# Reflexia Interpretation ###############
             #########################################################
             game_frame = self.locate_items_on_board(game_frame)
+            game_frame = self.detect_turns(game_frame)
+            game_frame = self.detect_health(game_frame)
             #########################################################
             ################### Show window Frames ##################
             #########################################################
@@ -141,6 +144,16 @@ class Reflexia():
                 return iD
         return -1
         
+    def detect_turns(self, game_frame):
+        lhs = str(1)
+        rhs = str(1)
+        cv2.putText(game_frame, 'Turns: '+lhs+'/'+rhs,(50,60),cv2.FONT_HERSHEY_PLAIN,0.8, (255,255,255), thickness=1)
+        return game_frame
+    
+    def detect_health(self, game_frame):
+        hp = str(1)
+        cv2.putText(game_frame, 'Health: '+hp+'%',(50,80),cv2.FONT_HERSHEY_PLAIN,0.8, (255,255,255), thickness=1)
+        return game_frame
 
 if __name__ == '__main__':
     print('> > > Start')
